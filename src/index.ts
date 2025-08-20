@@ -121,6 +121,34 @@ export class PluginSystem<THooks = Record<string, HookFunction>> {
     return null
   }
 
+  public async execAsync<K extends keyof THooks, TContext = any, TReturn = any>(
+    hookName: K,
+    context: TContext
+  ): TReturn | null {
+    const pluginsWithHook = this.getPluginsWithHook(hookName)
+
+    for (const plugin of pluginsWithHook) {
+      const hookFunction = plugin.hooks![hookName] as HookFunction<TContext, TReturn>
+
+      if (hookFunction) {
+        try {
+          const result = await hookFunction({
+            ...context,
+            plugins: this
+          } as TContext & HookContext)
+
+          if (result !== null && result !== undefined) {
+            return result
+          }
+        } catch (error) {
+          console.error(`Plugin "${plugin.name}" hook "${String(hookName)}" failed:`, error)
+        }
+      }
+    }
+
+    return null
+  }
+
   /**
    * Execute a hook and collect all results (not just the first one)
    */
@@ -137,6 +165,35 @@ export class PluginSystem<THooks = Record<string, HookFunction>> {
       if (hookFunction) {
         try {
           const result = hookFunction({
+            ...context,
+            plugins: this
+          } as TContext & HookContext)
+
+          if (result !== null && result !== undefined) {
+            results.push(result)
+          }
+        } catch (error) {
+          console.error(`Plugin "${plugin.name}" hook "${String(hookName)}" failed:`, error)
+        }
+      }
+    }
+
+    return results
+  }
+
+  public async execAllAsync<K extends keyof THooks, TContext = any, TReturn = any>(
+    hookName: K,
+    context: TContext
+  ): TReturn[] {
+    const pluginsWithHook = this.getPluginsWithHook(hookName)
+    const results: TReturn[] = []
+
+    for (const plugin of pluginsWithHook) {
+      const hookFunction = plugin.hooks![hookName] as HookFunction<TContext, TReturn>
+
+      if (hookFunction) {
+        try {
+          const result = await hookFunction({
             ...context,
             plugins: this
           } as TContext & HookContext)
