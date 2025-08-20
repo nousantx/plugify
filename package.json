@@ -1,20 +1,20 @@
 {
-  "name": "anyplugin",
+  "name": "plugify",
   "version": "1.0.0",
-  "description": "Add plugin ecosystem to your javascript code easily.",
+  "description": "A quick way to add plugin system to your code.",
   "author": "NOuSantx <github.com/nousantx | nousantx@gmail.com>",
   "license": "MIT",
   "keywords": [
     "javascript",
     "plugin"
   ],
-  "homepage": "https://github.com/nousantx/anyplugin#readme",
+  "homepage": "https://github.com/nousantx/plugify#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nousantx/anyplugin.git"
+    "url": "git+https://github.com/nousantx/plugify.git"
   },
   "bugs": {
-    "url": "https://github.com/nousantx/anyplugin/issues"
+    "url": "https://github.com/nousantx/plugify/issues"
   },
   "files": [
     "dist/*",
