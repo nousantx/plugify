@@ -1,12 +1,20 @@
 {
-  "name": "plugify",
-  "version": "1.0.0",
+  "name": "@nousantx/plugify",
+  "version": "1.0.0-alpha.0",
   "description": "A quick way to add plugin system to your code.",
   "author": "NOuSantx <github.com/nousantx | nousantx@gmail.com>",
   "license": "MIT",
   "keywords": [
+    "plugin",
+    "plugin-system",
+    "architecture",
+    "extensible",
+    "hooks",
+    "middleware",
+    "typescript",
     "javascript",
-    "plugin"
+    "modular",
+    "framework"
   ],
   "homepage": "https://github.com/nousantx/plugify#readme",
   "repository": {
