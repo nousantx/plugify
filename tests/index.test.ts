@@ -241,7 +241,7 @@ describe('PluginSystem', () => {
       const result = pluginSystem.exec('onInit', 'test')
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Plugin "async" hook "onInit" returned Promise in sync execution. Use execAsync instead.'
+        'Plugin "async" hook "onInit" returned Promise in sync execution. Use execAsync/execAllAsync instead.'
       )
       expect(result).toBeNull()
 
