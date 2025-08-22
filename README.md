@@ -12,6 +12,7 @@ A lightweight, type-safe plugin system for JavaScript and TypeScript application
 - **Error Resilient**: Graceful error handling that doesn't break the plugin chain
 - **Zero Dependencies**: Lightweight with no external dependencies
 - **Method Chaining**: Fluent API for easy plugin management
+- **Specialized Classes**: Choose between sync-only, async-only, or hybrid plugin systems
 
 ## Installation
 
@@ -56,27 +57,99 @@ const result = plugins.exec('onProcess', 'Hello World')
 console.log(result) // "hello world" (validator runs first due to higher priority)
 ```
 
+## Plugin System Classes
+
+Plugify provides three specialized classes to match your application's needs:
+
+### `SyncPluginSystem` - Sync Only
+
+For applications that only use synchronous hooks:
+
+```typescript
+import { SyncPluginSystem } from '@nousantx/plugify'
+
+const syncPlugins = new SyncPluginSystem<MyHooks>()
+const result = syncPlugins.exec('onProcess', data)
+const allResults = syncPlugins.execAll('onValidate', input)
+```
+
+### `AsyncPluginSystem` - Async Only
+
+For applications that only use asynchronous hooks:
+
+```typescript
+import { AsyncPluginSystem } from '@nousantx/plugify'
+
+const asyncPlugins = new AsyncPluginSystem<MyHooks>()
+const result = await asyncPlugins.exec('onComplete', data)
+const allResults = await asyncPlugins.execAll('onTransform', input)
+```
+
+### `PluginSystem` - Hybrid (Sync + Async)
+
+For applications that need both synchronous and asynchronous execution:
+
+```typescript
+import { PluginSystem } from '@nousantx/plugify'
+
+const plugins = new PluginSystem<MyHooks>()
+const syncResult = plugins.exec('onProcess', data)
+const asyncResult = await plugins.execAsync('onComplete', data)
+```
+
 ## API Reference
 
-### PluginSystem Constructor
+### Constructor
 
 ```typescript
 constructor(plugins?: PluginInput<THooks>[])
 ```
 
-### Methods
+Available for all three classes.
+
+### Common Methods
+
+All three classes share these plugin management methods:
 
 - `use(...plugins: PluginInput<THooks>[]): this` - Add plugins
 - `remove(pluginName: string): this` - Remove plugin by name
 - `clear(): this` - Remove all plugins
 - `getPlugins(): readonly Plugin<THooks>[]` - Get all plugins
 - `getPluginsWithHook<K>(hookName: K): readonly Plugin<THooks>[]` - Get plugins with specific hook
+
+### Execution Methods by Class
+
+#### `SyncPluginSystem`
+
 - `exec<K>(hookName: K, ...args): TReturn | null` - Execute first matching hook
-- `execAsync<K>(hookName: K, ...args): Promise<TReturn | null>` - Execute first matching async hook
 - `execAll<K>(hookName: K, ...args): TReturn[]` - Execute all matching hooks
+
+#### `AsyncPluginSystem`
+
+- `exec<K>(hookName: K, ...args): Promise<TReturn | null>` - Execute first matching async hook
+- `execAll<K>(hookName: K, ...args): Promise<TReturn[]>` - Execute all matching async hooks
+
+#### `PluginSystem` (Hybrid)
+
+- `exec<K>(hookName: K, ...args): TReturn | null` - Execute first matching sync hook
+- `execAll<K>(hookName: K, ...args): TReturn[]` - Execute all matching sync hooks
+- `execAsync<K>(hookName: K, ...args): Promise<TReturn | null>` - Execute first matching async hook
 - `execAllAsync<K>(hookName: K, ...args): Promise<TReturn[]>` - Execute all matching async hooks
 
 ## Usage Examples
+
+### Choosing the Right Class
+
+```typescript
+// For sync-only applications (better performance)
+const syncPlugins = new SyncPluginSystem<SyncHooks>()
+
+// For async-only applications
+const asyncPlugins = new AsyncPluginSystem<AsyncHooks>()
+
+// For mixed applications (most flexible)
+const hybridPlugins = new PluginSystem<MixedHooks>()
+```
 
 ### Basic Plugin Registration
 
@@ -105,37 +178,27 @@ plugins.use([plugin1, plugin2])
 
 ### Hook Execution Modes
 
-#### `exec()` - First Match
+#### First Match Execution
 
 Executes plugins in priority order and returns the first non-null/undefined result:
 
 ```typescript
+// Sync
 const result = plugins.exec('onProcess', inputData)
-// Returns result from highest priority plugin that handles the hook
-```
 
-#### `execAsync()` - First Match (Async)
-
-Same as `exec()` but handles async hooks:
-
-```typescript
+// Async
 const result = await plugins.execAsync('onComplete', data)
 ```
 
-#### `execAll()` - All Results
+#### All Results Execution
 
 Executes all plugins and collects all non-null results:
 
 ```typescript
+// Sync
 const results = plugins.execAll('onValidate', input)
-// Returns array of all validation results
-```
 
-#### `execAllAsync()` - All Results (Async)
-
-Same as `execAll()` but handles async hooks:
-
-```typescript
+// Async
 const results = await plugins.execAllAsync('onTransform', data)
 ```
 
@@ -196,6 +259,31 @@ plugins.use({
 // Will log error from 'faulty' plugin but return result from 'backup'
 const result = plugins.exec('onProcess', 'test')
 ```
+
+### Async vs Sync Hook Warnings
+
+The hybrid `PluginSystem` will warn you if you mix execution types:
+
+```typescript
+// This will log a warning and skip the plugin
+plugins.use({
+  name: 'async-hook',
+  onProcess: async (data) => await processAsync(data)
+})
+
+// Using sync execution on async hook
+plugins.exec('onProcess', data) // Logs warning, skips async plugin
+
+// Correct usage
+await plugins.execAsync('onProcess', data) // Works correctly
+```
+
+## Performance Tips
+
+- Use `SyncPluginSystem` for sync-only applications for better performance
+- Use `AsyncPluginSystem` for async-only applications to avoid sync overhead
+- Use `PluginSystem` only when you need both sync and async execution
+- Plugin lookup is cached for better performance on repeated hook calls
 
 ## License
 
