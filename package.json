@@ -1,6 +1,6 @@
 {
   "name": "@nousantx/plugify",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0",
   "description": "A quick way to add plugin system to your code.",
   "author": "NOuSantx <github.com/nousantx | nousantx@gmail.com>",
   "license": "MIT",

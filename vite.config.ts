@@ -6,7 +6,7 @@ const fileName = 'index'
 export default defineConfig({
   build: {
     target: 'es2017',
-    sourcemap: true,
+    sourcemap: false,
     minify: false,
     lib: {
       name,
