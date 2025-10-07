@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 
-const name = 'Module'
+const name = 'plugify'
 const fileName = 'index'
 
 export default defineConfig({

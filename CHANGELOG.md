@@ -1,6 +1,14 @@
 # Changelog
 
-## `v1.0.0-alpha.2` - Unreleased
+## `v1.0.1` - `2025-10-07`
+
+### Changed
+
+- Rename previous module name on `iife` format
+
+## `v1.0.0` - `2025-09-19`
+
+Initial release
 
 ### Development
 
